@@ -1,3 +1,7 @@
+var dynCall = typeof Module !== 'undefined' ? function(method, event, arguments) {
+    return Module['dynCall_' + method].apply(Module, [event].concat(arguments));
+} : (Runtime && Runtime.dynCall && Runtime.dynCall.bind(Runtime));
+
 var LibraryWebSocket = {
   $state: {
     url: null,
@@ -39,7 +43,7 @@ var LibraryWebSocket = {
       }
 
       if (state.onOpen) {
-        Runtime.dynCall('v', state.onOpen, []);
+        dynCall('v', state.onOpen, []);
       }
     };
 
@@ -59,7 +63,7 @@ var LibraryWebSocket = {
         HEAPU8.set(dataBuffer, buffer);
 
         try {
-          Runtime.dynCall('vii', state.onMessage, [buffer, dataBuffer.length]);
+          dynCall('vii', state.onMessage, [buffer, dataBuffer.length]);
         } finally {
           _free(buffer);
         }
@@ -78,7 +82,7 @@ var LibraryWebSocket = {
         stringToUTF8(msg, msgBuffer, msgBytes);
 
         try {
-          Runtime.dynCall('vi', state.onError, [msgBuffer]);
+          dynCall('vi', state.onError, [msgBuffer]);
         } finally {
           _free(msgBuffer);
         }
@@ -91,7 +95,7 @@ var LibraryWebSocket = {
       }
 
       if (state.onClose) {
-        Runtime.dynCall('vi', state.onClose, [ev.code]);
+        dynCall('vi', state.onClose, [ev.code]);
       }
     };
   },
